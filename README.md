@@ -2,7 +2,6 @@
 
 # How to Run
 python fetch_page.py url1 url2  
-Example: python fetch_page.py https://example.com https://python.org
 
 # What My Program Does
 - Takes two url from command line
@@ -25,13 +24,3 @@ Example: python fetch_page.py https://example.com https://python.org
 - compare_simhash() - compare two SimHash and count common bits
 - main_fun() - run everything
 
-# Sample Output
-Url1 given https://example.com
-URL2 given https://python.org
-Title: Example Domain
-Body: Example Domain text...
-Links: https://iana.org/domains/example
-Title: Welcome to Python.org
-Body: Python programming text...
-Links: https://www.python.org/about/
-52
