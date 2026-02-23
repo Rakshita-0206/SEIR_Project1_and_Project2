@@ -25,7 +25,7 @@ def request_html(url):
     try:
         html = html.decode("utf-8")
     except:
-        html = html.decode("latin-1")
+        html = html.decode("latin-1")   
 
     return html
 
@@ -48,23 +48,12 @@ def extract_tittle(html):
                         return tittle
                 tittle = tittle + html[j]
                 j += 1
-
-        #sometimes some website may use tittle also so ya , for that we need to use this 
-        if html[i:i+7] == "<title>" or html[i:i+7] == "<TITLE>":
-            j = i + 7
-            tittle = ""
-            while j < len(html):
-                if html[j:j+8] == "</title>" or html[j:j+8] == "</TITLE>":
-                    return tittle
-                tittle = tittle + html[j]
-                j += 1
-    
     return "contain no tittle"  #if we got nothing, then we need to return the no tittle found.
 
 # this extract only text from body (removing all the html tags)
 def extract_body(html):    
     body_content=""
-    for i in range(len(html)):  
+    for i in range(len(html)):   
         # find body tag start
         if html[i:i+5]=="<BODY" or html[i:i+5]=="<body":   
         
@@ -258,5 +247,6 @@ def main_fun():
 if __name__ == "__main__":
 
     main_fun()
+
 
 
