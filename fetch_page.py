@@ -6,7 +6,7 @@ import gzip
 def url_storing ():
     args = sys.argv  
     if len(args)<3:
-        print("Please provide stwo URL")
+        print("Please provide two URL")
         sys.exit()
     url1=args[1]
     url2=args[2]
@@ -17,7 +17,7 @@ def url_storing ():
 # this fetch the html from url
 def request_html(url):
     request = urllib.request.Request(url)
-    request.add_header("User-Agent", "Mozilla/5.0")
+    request.add_header("User-Agent", "Mozilla/5.0")  #this is done because , website should not block us for the request we sent.
 
     response = urllib.request.urlopen(request)
 
@@ -39,18 +39,17 @@ def extract_tittle(html):
             # find end of opening tag
             while k < len(html) and html[k] != ">":
                 k += 1
-            j = k + 1 # start of content
+            j = k + 1 # start of content, from here we start collecting the text of the tittle 
             
             tittle = ""  
-            # get text until closing tag
             while j < len(html):
                 if html[j:j+5] == "</h1>" or html[j:j+5]=="</H1>":
                     if tittle:
                         return tittle
                 tittle = tittle + html[j]
                 j += 1
-                
-        # check for title tag        
+
+        #sometimes some website may use tittle also so ya , for that we need to use this 
         if html[i:i+7] == "<title>" or html[i:i+7] == "<TITLE>":
             j = i + 7
             tittle = ""
@@ -60,20 +59,20 @@ def extract_tittle(html):
                 tittle = tittle + html[j]
                 j += 1
     
-    return "contain no tittle"
+    return "contain no tittle"  #if we got nothing, then we need to return the no tittle found.
 
-# this extract only text from body (remove all tags)
-def extract_body(html):
+# this extract only text from body (removing all the html tags)
+def extract_body(html):    
     body_content=""
-    for i in range(len(html)):
+    for i in range(len(html)):  
         # find body tag start
-        if html[i:i+5]=="<BODY" or html[i:i+5]=="<body":
+        if html[i:i+5]=="<BODY" or html[i:i+5]=="<body":   
         
             k=i
-            # find end of body opening tag
+            # finding the end of body opening tag
             while k<len(html) and html[k]!=">":
                 k=k+1
-            k=k+1  # move past >
+            k=k+1  
     
             # get everything until closing body
             while k<len(html):
@@ -82,7 +81,7 @@ def extract_body(html):
                 body_content=body_content+html[k]
                 k=k+1
             
-            # remove all tags from body content
+            # remove all tags from body content, to get the clean text
             required_content=""
             inside_tag=False
             for j in range(len(body_content)):
@@ -102,25 +101,25 @@ def extract_link1(html):
     link_list=[]
     
     for i in range(len(html)):
-        # find anchor tag
+        # finding the anchor tag
         if html[i:i+2]=="<a" or html[i:i+2]=="<A":
-            # look for href after it
+            # look for href after it 
             for j in range(i+2, len(html)):
                 if html[j:j+4]=="href" or html[j:j+4]=="HREF":
                     k=j+4
-                    # find = sign after that omly link start
+                    # find = sign after that only link start
                     while k<len(html) and html[k]!="=":
                         k=k+1
                     k=k+1
-                    # skip spaces, if present 
+                    # skip spaces, if present in the starting of the link
                     while k<len(html) and html[k]==" ":
                         k=k+1
-                    # check for quote
+                    # here we are checking for the quotes, because link is written in between the quotes
                     if k<len(html) and (html[k]=='"' or html[k]=="'"):
                         starting_quote=html[k]
                         k=k+1
                         link=""
-                        # get url until closing quote
+                        # get url until closing quote  
                         while k<len(html) and html[k]!=starting_quote:
                             link=link+html[k]
                             k=k+1
@@ -134,7 +133,7 @@ def extract_link1(html):
 def count_word(text):
     
     text = text.lower()  # make all small letter, not case sensitive so ya 
-    words = text.split()  # split at spaces
+    words = text.split()  
     dict_word = {}
     for word in words:
         # remove punctuation from word
@@ -151,7 +150,7 @@ def count_word(text):
     
     return dict_word     
 
-# this make 64 bit hash using formula given 
+# this make 64 bit hash using formula given in the assignment
 def cal_hash(word):
     hash_sum = 0
     for i in range(len(word)):
@@ -159,7 +158,7 @@ def cal_hash(word):
         hash_fun = asci_val * (53 ** i)  
         hash_sum = hash_sum + hash_fun  
     
-    hash_final = hash_sum % (2**64)  # take mod 2^64
+    hash_final = hash_sum % (2**64)  
     return hash_final
     
 # this make simhash for whole document    
@@ -168,7 +167,7 @@ def hash_for_doc(word_dict):
     for i in range(64):
         v.append(0)  #  fill with zeros in the array 
     
-    # for each word in dictionary
+
     for word in word_dict:
         frequency = word_dict[word]  
         hash_value = cal_hash(word) 
@@ -177,7 +176,7 @@ def hash_for_doc(word_dict):
         while len(binary_str) < 64:
             binary_str = "0" + binary_str
         
-        # update v array based on bits
+        # update v array based on bits present in the binary_str
         for j in range(64):
             if binary_str[j] == '1':
                 v[j] = v[j] + frequency  # add if bit is 1
@@ -192,13 +191,13 @@ def hash_for_doc(word_dict):
             power = 1
             for k in range(j):
                 power = power * 2
-            final_hash = final_hash + power  # add to final, atlast this only we return 
+            final_hash = final_hash + power  # add to final, at last this only we return 
     
     return final_hash
 
 # this compare two simhash and count common bits
 def compare_simhash(word_dict1, word_dict2):
-    # get simhash for both documents
+    # getting the simhash for both documents
     finger_print_1=hash_for_doc(word_dict1)
     finger_print_2=hash_for_doc(word_dict2)
     
@@ -257,4 +256,5 @@ def main_fun():
 
 # this part is for running  the program
 if __name__ == "__main__":
+
     main_fun()
