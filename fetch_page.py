@@ -163,7 +163,7 @@ def cal_hash(word):
     
 # this make simhash for whole document    
 def hash_for_doc(word_dict):
-    v = []  # array of 64 numbers
+    v = []
     for i in range(64):
         v.append(0)  #  fill with zeros in the array 
     
@@ -254,8 +254,9 @@ def main_fun():
     common = compare_simhash(dict1, dict2)
     print(common)
 
-# this part is for running  the program
+
 if __name__ == "__main__":
 
     main_fun()
+
 
